@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -54,12 +55,17 @@ public class SongManager : MonoBehaviour
     private void ReadFromFile()
     {
         midiFile = MidiFile.Read(midiFilePath);
-        
-        var notes = midiFile.GetNotes();
-        Note[] notesArray = new Note[notes.Count];
-        notes.CopyTo(notesArray, 0);
+        var trackChunks = midiFile.GetTrackChunks().ToArray();
+        Note[][] tracksArray = new Note[trackChunks.Count()][];
+        print($"Track chunks: {trackChunks.Count()}");
+        for (int i = 0; i < trackChunks.Count(); i++)
+        {
+            var notes = trackChunks[i].GetNotes();
+            tracksArray[i] = new Note[notes.Count];
+            notes.CopyTo(tracksArray[i], 0);
+        }
 
-        foreach (var column in columns) column.SettargetTsList_s(notesArray);
+        foreach (var column in columns) column.SetTargetTimestamps(tracksArray[column.midiTrackId]);
     }
 
     public void StartAudio()

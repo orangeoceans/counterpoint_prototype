@@ -7,6 +7,8 @@ using UnityEngine;
 public class Column : MonoBehaviour
 {
     public Melanchall.DryWetMidi.MusicTheory.NoteName[] notesToShow;
+
+    public int midiTrackId;
     public KeyCode input;
     public GameObject targetPrefab;
     List<Target> targets = new List<Target>();
@@ -20,18 +22,16 @@ public class Column : MonoBehaviour
         
     }
 
-    public void SettargetTsList_s(Note[] noteArray)
+    public void SetTargetTimestamps(Note[] noteArray)
     {
         foreach (Note note in noteArray)
         {
-            // if (notesToShow.Contains(note.NoteName))
-            if (true)
+            if (notesToShow.Contains(note.NoteName))
             {
                 var metricTimeSpan = TimeConverter.ConvertTo<MetricTimeSpan>(note.Time, SongManager.midiFile.GetTempoMap());
                 targetTsList_s.Add((double)metricTimeSpan.Minutes * 60f + metricTimeSpan.Seconds + (double)metricTimeSpan.Milliseconds / 1000f);
             }
         }
-        print(System.String.Join(" ", targetTsList_s));
     }
 
     void Update()
@@ -63,7 +63,7 @@ public class Column : MonoBehaviour
                 {
                     Hit();
                     print($"Hit {hitIdx} target!");
-                    Destroy(targets[hitIdx].gameObject);
+                    //Destroy(targets[hitIdx].gameObject);
                     hitIdx++;
                 }
                 else
@@ -71,7 +71,7 @@ public class Column : MonoBehaviour
                     print($"Hit inaccurate on {hitIdx} note with {System.Math.Abs(audioTime_s - targetTs_s)} delay");
                 }
             }
-            while (targetTsList_s[hitIdx] + marginOfError_s <= audioTime_s)
+            while (hitIdx < targetTsList_s.Count && targetTsList_s[hitIdx] + marginOfError_s <= audioTime_s)
             {
                 Miss();
                 print($"Missed {hitIdx} note!");
