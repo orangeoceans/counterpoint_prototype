@@ -63,7 +63,7 @@ public class Column : MonoBehaviour
                 {
                     Hit();
                     print($"Hit {hitIdx} target!");
-                    //Destroy(targets[hitIdx].gameObject);
+                    Destroy(targets[hitIdx].gameObject);
                     hitIdx++;
                 }
                 else
